@@ -15,10 +15,10 @@ public class Player implements Serializable {
         health = 100;
     }
 
-    public Player(String name, int ClientNum) {
-        this.name = name;
-        this.ClientNum = ClientNum;
+    public Player() {
+        health = 100;
     }
+
 
     public String getName() {
         return name;
