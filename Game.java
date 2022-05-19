@@ -22,12 +22,15 @@ public class Game {
         map = new Map();
         map.loadMap();
         map.printMap();
+        
         try {
             server = new Socket(SERVER, PORT);
             gameLoop(server, map);
         } catch (IOException e) {
+            map.message = "Server Not Found Please Start Server and Restart Game";
+            map.printMap();
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         // System.out.println(Arrays.deepToString(map.map));
     }
@@ -57,9 +60,25 @@ public class Game {
                     if (response.startsWith("OPP")) {
                         setOpponentPosition(map, response);
                     }
+                    if(response.startsWith("OSCO")){
+                        map.p2.score = Integer.parseInt(response.split(",")[1]);
+                    }
+                    if(response.startsWith("MSG")){
+                        map.message = response.split(",")[1];
+                    }
                 }
-                System.out.println("Player Moved");
+                // System.out.println("Player Moved");
                 movementController();
+                if(map.p1.score + map.p2.score == 11){
+                    playing = false;
+                    if(map.p1.score > map.p2.score){
+                        map.gameOver = "You win!!!";
+                    }else if(map.p1.score < map.p2.score){
+                        map.gameOver = "You Lose!!";
+                    }else{
+                        map.gameOver = "Game ended on uncertain conditions";
+                    }
+                }
                 Thread.sleep(200);
                 map.printMap();
             }
@@ -133,7 +152,9 @@ public class Game {
             return false;
         }
         if(nextTile.equals("G")){
-            map.p1.score=+1;
+            map.p1.score++;
+            out.println("SCO"+","+map.p1.score);
+            return true;
         }
         return true;
 
@@ -191,7 +212,16 @@ public class Game {
         try{
         switch (key.getKind()) {
             case Escape:
-                // stop = true;
+                // stop = true;     
+                try {
+                    out.println("QUIT");
+                    out.flush();
+                    server.close();
+                    map.screen.stopScreen();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 break;
             case ArrowRight:
                 if (validMove("right")) {

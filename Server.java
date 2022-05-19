@@ -16,6 +16,7 @@ public class Server {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            System.out.println("Connection Broken");
         }
     }
 
@@ -40,6 +41,7 @@ public class Server {
 class PlayerThread extends Thread {
     String mark;
     PlayerThread opponent;
+    int Score;
     int position[] = new int[2];
     Socket socket;
     BufferedReader input;
@@ -89,6 +91,14 @@ class PlayerThread extends Thread {
         this.output.println(message);
         this.output.flush();
     }
+    public void setScore(int sc){
+        this.Score = sc;
+        opponent.setOpponentScore();
+    }
+    public void setOpponentScore(){
+        this.output.println("OSCO"+","+opponent.Score);
+        this.output.flush();
+    }
 
     public void run() {
         try {
@@ -107,20 +117,39 @@ class PlayerThread extends Thread {
             // Repeatedly get commands from the client and process them.
             while (true) {
                 // System.out.println("Looping");
+                if(socket.isClosed()){
+                    System.out.println("MSG,Opponent Disconnected");            
+                    opponent.sendMessage("MSG,Opponent Disconnected");
+                }
                 if (input.ready()) {
-                    System.out.println("Inside input ready");
+                    // System.out.println("Inside input ready");
                     String command = input.readLine();
-                    System.out.println(mark);
                     System.out.println(command);
-                    setMyNewPosition(command);
-                    opponent.sendOpponentPosition();
+                    if(command.equals("QUIT")){
+                        System.out.println("MSG,Opponent Disconnected");            
+                        opponent.sendMessage("MSG,Opponent Disconnected");
+                    }
+                    if(command.startsWith("NPOS")){
+                        // System.out.println(mark);
+                        setMyNewPosition(command);
+                        opponent.sendOpponentPosition();
+                    }
+                    if(command.startsWith("SCO")){
+                        setScore(Integer.parseInt(command.split(",")[1]));
+                    }
+                    
+
                 }
                 Thread.sleep(200);
             }
         } catch (IOException | InterruptedException e) {
             System.out.println("Player died: " + e);
+            System.out.println("MSG,Opponent Disconnected");
+            opponent.sendMessage("MSG,Opponent Disconnected");
         } finally {
             try {
+                System.out.println("MSG,Opponent Disconnected");
+                opponent.sendMessage("MSG,Opponent Disconnected");
                 socket.close();
             } catch (IOException e) {
             }

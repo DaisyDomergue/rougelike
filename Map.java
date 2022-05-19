@@ -16,6 +16,8 @@ public class Map {
     Screen screen;
     Player p1;
     Player p2;
+    String gameOver = "";
+    String message = "";
 
     public Map() {
         this.screen = TerminalFacade.createScreen();
@@ -86,6 +88,7 @@ public class Map {
             }
         }
         printScores();
+        printMessage();
         this.screen.refresh();
     }
 
@@ -147,8 +150,18 @@ public class Map {
     }
 
     public void printScores() {
-        screen.putString(getMaxX() / 2, 24, "Scores", Terminal.Color.WHITE, Terminal.Color.BLACK);
-        screen.putString(getMaxX() / 2, 25, "Player 1: " + p1.getScore(), Terminal.Color.WHITE, Terminal.Color.BLACK);
-        screen.putString(getMaxX() / 2, 26, "Player 2: " + p2.getScore(), Terminal.Color.WHITE, Terminal.Color.BLACK);
+        if (gameOver.equals("")) {
+            screen.putString(getMaxX() / 2, 24, "Scores", Terminal.Color.WHITE, Terminal.Color.BLACK);
+            screen.putString(getMaxX() / 2, 25, "You: " + p1.getScore(), Terminal.Color.WHITE, Terminal.Color.BLACK);
+            screen.putString(getMaxX() / 2, 26, "You Opponent: " + p2.getScore(), Terminal.Color.WHITE, Terminal.Color.BLACK);
+        }else{
+            screen.putString(getMaxX()/ 2, 24, gameOver, Terminal.Color.RED, Terminal.Color.YELLOW);
+        }
+
+    }
+    public void printMessage() {
+        if(!message.equals("")){
+            screen.putString(getMaxX()/ 2, 28, message, Terminal.Color.RED, Terminal.Color.YELLOW);
+        }
     }
 }
