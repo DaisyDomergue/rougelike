@@ -57,6 +57,7 @@ public class Game {
                     }
                 }
                 System.out.println("Player Moved");
+                movementController();
                 Thread.sleep(200);
             }
         } catch (IOException | InterruptedException e) {
@@ -115,19 +116,19 @@ public class Game {
             return false;
         }
     }
-    public static void movementController(Screen screen) {
+    public static void movementController() {
         //System.out.println("Starting Movement Controls");
-        boolean stop = false;
-        while (!stop) {
-            Key key = screen.readInput();
+        // boolean stop = false;
+        // while (!stop) {
+            Key key = map.screen.readInput();
             while (key == null) {
-                key = screen.readInput();
+                key = map.screen.readInput();
             }
 
             // Move around with arrow keys in normal map view escape closes the application
             switch (key.getKind()) {
                 case Escape:
-                    stop = true;
+                    // stop = true;
                     break;
                 case ArrowRight:
                     if (validMove("right")) {
@@ -172,7 +173,7 @@ public class Game {
             //     // TODO Auto-generated catch block
             //     e.printStackTrace();
             // }
-        }
+        // }
     }
 
 }
