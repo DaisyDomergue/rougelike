@@ -6,9 +6,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch Current File",
+            "name": "Launch Server",
             "request": "launch",
-            "mainClass": "${file}"
+            "mainClass": "Server",
+            "projectName": "roguelike_28d7cadf"
         },
         {
             "type": "java",

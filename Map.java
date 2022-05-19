@@ -51,7 +51,9 @@ public class Map {
         }
 
     }
-
+    public void setString(String set, int x, int y) {
+        map[x][y] = set;
+    }
     public void printMap() {
         for (int i = 0; i < maxY; i++) {
             for (int j = 0; j < maxX; j++) {
@@ -79,4 +81,5 @@ public class Map {
         }
         this.screen.refresh();
     }
+    
 }
