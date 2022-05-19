@@ -14,6 +14,7 @@ public class Game {
     private static final String SERVER = "localhost";
     private static final int PORT = 9000;
     private static BufferedReader in;
+    private static PrintWriter out;
     private static Socket server;
     private static Map map;
 
@@ -37,7 +38,7 @@ public class Game {
         try {
             in = new BufferedReader(new InputStreamReader(server.getInputStream()));
             outstream = server.getOutputStream();
-            PrintWriter out = new PrintWriter(outstream);
+            out = new PrintWriter(outstream,true);
             // String status = "ready";
             // out.print(status);
             String response = in.readLine();
@@ -60,6 +61,7 @@ public class Game {
                 System.out.println("Player Moved");
                 movementController();
                 Thread.sleep(200);
+                map.printMap();
             }
         } catch (IOException | InterruptedException e) {
             // TODO Auto-generated catch block
@@ -80,9 +82,11 @@ public class Game {
         String[] args = pos.split(",");
         int x = Integer.parseInt(args[1]);
         int y = Integer.parseInt(args[2]);
+        map.setString(" ", map.getPlayerX(), map.getPlayerY());
         map.p1.setPosX(x);
         map.p1.setPosy(y);
         map.setString("@", x, y);
+        out.println("NPOS"+","+map.getPlayerX()+","+map.getPlayerY());
         map.printMap();
     }
 
@@ -90,6 +94,7 @@ public class Game {
         String[] args = pos.split(",");
         int x = Integer.parseInt(args[1]);
         int y = Integer.parseInt(args[2]);
+        map.setString(" ", map.p2.getX(), map.p2.getY());
         map.p2.setPosX(x);
         map.p2.setPosy(y);
         map.setString("$", x, y);
@@ -101,44 +106,74 @@ public class Game {
         int posY = map.getPlayerY();
         int maxX = map.getMaxX();
         int maxY = map.getMaxY();
+        String nextTile;
+        switch (move) {
+            case "right":
+                nextTile = map.getStringAt(posX + 1, posY);
+                break;
 
-        if (move.equals("right")) {
-            if (posX < maxX && !map.getStringAt(posX + 1, posY).equals("#")) {
-                return true;
-            } /*
-               * else if (posX < maxX && !map.getStringAt(posX + 1, posY).equals("$")) {
-               * return true;
-               * }
-               */
-            return false;
-        } else if (move.equals("left")) {
-            if (posX > 0 && !map.getStringAt(posX - 1, posY).equals("#")) {
-                return true;
-            } /*
-               * else if (posX > 0 && !map.getStringAt(posX - 1, posY).equals("$")) {
-               * return true;
-               * }
-               */
-            return false;
-        } else if (move.equals("down")) {
-            if (posY < maxY && !map.getStringAt(posX, posY + 1).equals("#")) {
-                return true;
-            } /*
-               * else if (posY < maxY && !map.getStringAt(posX, posY + 1).equals("$")) {
-               * return true;
-               * }
-               */
-            return false;
-        } else {// move.equals("up")
-            if (posY > 0 && !map.getStringAt(posX, posY - 1).equals("#")) {
-                return true;
-            } /*
-               * else if (posY > 0 && !map.getStringAt(posX, posY - 1).equals("$")) {
-               * return true;
-               * }
-               */
+            case "left":
+                nextTile = map.getStringAt(posX - 1, posY);
+                break;
+
+            case "down":
+                nextTile = map.getStringAt(posX , posY + 1);
+                break;
+
+            case "up":
+                nextTile = map.getStringAt(posX , posY - 1);
+                break;
+        
+            default:
+                nextTile = "#";
+                break;
+        }
+        if(nextTile.equals("#") || nextTile.equals("$")){
+            System.out.println("Wall or Enemy Found");
             return false;
         }
+        if(nextTile.equals("G")){
+            map.p1.score=+1;
+        }
+        return true;
+
+        // if (move.equals("right")) {
+        //     if (posX < maxX && !map.getStringAt(posX + 1, posY).equals("#")) {
+        //         return true;
+        //     } /*
+        //        * else if (posX < maxX && !map.getStringAt(posX + 1, posY).equals("$")) {
+        //        * return true;
+        //        * }
+        //        */
+        //     return false;
+        // } else if (move.equals("left")) {
+        //     if (posX > 0 && !map.getStringAt(posX - 1, posY).equals("#")) {
+        //         return true;
+        //     } /*
+        //        * else if (posX > 0 && !map.getStringAt(posX - 1, posY).equals("$")) {
+        //        * return true;
+        //        * }
+        //        */
+        //     return false;
+        // } else if (move.equals("down")) {
+        //     if (posY < maxY && !map.getStringAt(posX, posY + 1).equals("#")) {
+        //         return true;
+        //     } /*
+        //        * else if (posY < maxY && !map.getStringAt(posX, posY + 1).equals("$")) {
+        //        * return true;
+        //        * }
+        //        */
+        //     return false;
+        // } else {// move.equals("up")
+        //     if (posY > 0 && !map.getStringAt(posX, posY - 1).equals("#")) {
+        //         return true;
+        //     } /*
+        //        * else if (posY > 0 && !map.getStringAt(posX, posY - 1).equals("$")) {
+        //        * return true;
+        //        * }
+        //        */
+        //     return false;
+        // }
     }
 
     // public static void
@@ -148,44 +183,44 @@ public class Game {
         // boolean stop = false;
         // while (!stop) {
         Key key = map.screen.readInput();
-        while (key == null) {
-            key = map.screen.readInput();
-        }
+        // while (key == null) {
+        //     key = map.screen.readInput();
+        // }
 
         // Move around with arrow keys in normal map view escape closes the application
+        try{
         switch (key.getKind()) {
             case Escape:
                 // stop = true;
                 break;
             case ArrowRight:
                 if (validMove("right")) {
-                    map.movePlayerRight();
+                    setPlayerPosition(map, "POS"+","+(map.p1.getX()+1)+","+map.p1.getY());
                 }
-                map.printMap();
                 break;
             case ArrowLeft:
                 if (validMove("left")) {
-                    map.movePlayerLeft();
+                    setPlayerPosition(map, "POS"+","+(map.p1.getX()-1)+","+map.p1.getY());
                 }
-                map.printMap();
                 break;
 
             case ArrowDown:
                 if (validMove("down")) {
-                    map.movePlayerDown();
+                    setPlayerPosition(map, "POS"+","+map.p1.getX()+","+(map.p1.getY()+1));
                 }
-                map.printMap();
                 break;
 
             case ArrowUp:
                 if (validMove("up")) {
-                    map.movePlayerUp();
+                    setPlayerPosition(map, "POS"+","+map.p1.getX()+","+(map.p1.getY()-1));
                 }
-                map.printMap();
                 break;
             default:
                 break;
         }
+    }catch(NullPointerException e){
+
+    }
         // try {
         // // System.out.println("sending map to server");
         // op.writeObject(map);

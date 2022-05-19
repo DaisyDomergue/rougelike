@@ -6,20 +6,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Launch Game",
-            "request": "launch",
-            "mainClass": "Game",
-            "projectName": "rougelike_f33935cc"
-        },
-        {
-            "type": "java",
-            "name": "Launch Server",
-            "request": "launch",
-            "mainClass": "Server",
-            "projectName": "rougelike_f33935cc"
-        },
-        {
-            "type": "java",
             "name": "Launch Server",
             "request": "launch",
             "mainClass": "Server",

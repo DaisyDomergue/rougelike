@@ -50,8 +50,7 @@ class PlayerThread extends Thread {
         this.socket = socket;
         this.mark = mark;
         try {
-            input = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream()));
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new PrintWriter(socket.getOutputStream(), true);
             output.println("WELCOME " + mark);
             output.println("MESSAGE Waiting for opponent to connect");
@@ -65,6 +64,13 @@ class PlayerThread extends Thread {
     }
 
     public void setPosition(int x, int y) {
+        this.position[0] = x;
+        this.position[1] = y;
+    }
+    public void setMyNewPosition(String pos) {
+        String[] args = pos.split(",");
+        int x = Integer.parseInt(args[1]);
+        int y = Integer.parseInt(args[2]);
         this.position[0] = x;
         this.position[1] = y;
     }
@@ -100,9 +106,14 @@ class PlayerThread extends Thread {
 
             // Repeatedly get commands from the client and process them.
             while (true) {
+                // System.out.println("Looping");
                 if (input.ready()) {
+                    System.out.println("Inside input ready");
                     String command = input.readLine();
+                    System.out.println(mark);
                     System.out.println(command);
+                    setMyNewPosition(command);
+                    opponent.sendOpponentPosition();
                 }
                 Thread.sleep(200);
             }
