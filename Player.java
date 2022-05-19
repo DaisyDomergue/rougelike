@@ -8,17 +8,17 @@ public class Player implements Serializable {
     static Map map;
     public String name;
     public int ClientNum;
+    public int score;
 
     public Player(int posX, int posY) {
         this.posX = posX;
         this.posY = posY;
-        health = 100;
+        score = 0;
     }
 
     public Player() {
         health = 100;
     }
-
 
     public String getName() {
         return name;
@@ -45,8 +45,12 @@ public class Player implements Serializable {
         posY = y;
     }
 
-    public int getHealth() {
-        return health;
+    public int getScore() {
+        return score;
+    }
+
+    public void incScore() {
+        score++;
     }
 
     public void setHealth(int change) {

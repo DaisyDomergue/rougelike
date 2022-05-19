@@ -15,12 +15,14 @@ public class Map {
     private ArrayList players;
     Screen screen;
     Player p1;
-    
+    Player p2;
+
     public Map() {
         this.screen = TerminalFacade.createScreen();
         this.screen.startScreen();
         System.out.println("Created Screen");
         p1 = new Player();
+        p2 = new Player();
     }
 
     public void loadMap() {
@@ -83,6 +85,7 @@ public class Map {
                 }
             }
         }
+        printScores();
         this.screen.refresh();
     }
 
@@ -141,5 +144,11 @@ public class Map {
     // String held in the map array at a given coordinate pair
     public String getStringAt(int x, int y) {
         return map[x][y];
+    }
+
+    public void printScores() {
+        screen.putString(getMaxX() / 2, 24, "Scores", Terminal.Color.WHITE, Terminal.Color.BLACK);
+        screen.putString(getMaxX() / 2, 25, "Player 1: " + p1.getScore(), Terminal.Color.WHITE, Terminal.Color.BLACK);
+        screen.putString(getMaxX() / 2, 26, "Player 2: " + p2.getScore(), Terminal.Color.WHITE, Terminal.Color.BLACK);
     }
 }
